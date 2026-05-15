@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Facturacion</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v=asset_version) }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Cuadro de Mandos Integral</p>
+      <h1>Dashboard de facturacion</h1>
+    </div>
+    <div class="top-actions">
+      <button id="refreshBtn" type="button">Actualizar datos</button>
+      <form method="post" action="{{ url_for('logout') }}">
+        <button class="secondary" type="submit">Salir</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="status-row">
+      <div>
+        <span>Ultima lectura</span>
+        <strong id="refreshedAt">Sin cargar</strong>
+      </div>
+      <div>
+        <span>Periodo mas reciente</span>
+        <strong id="latestPeriod">-</strong>
+      </div>
+      <div>
+        <span>Usuario</span>
+        <strong>{{ user.username }}</strong>
+      </div>
+    </section>
+
+    <section class="panel filter-panel">
+      <div class="panel-head split">
+        <div>
+          <p class="section-kicker">Periodo de analisis</p>
+          <h2>Elige el mes que quieres revisar</h2>
+        </div>
+        <div class="filters">
+          <label>
+            Año
+            <select id="yearSelect"></select>
+          </label>
+          <label>
+            Mes
+            <select id="monthSelect"></select>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="kpis" id="kpis"></section>
+
+    <section class="panel priority-panel">
+      <div class="panel-head split">
+        <div>
+          <p class="section-kicker">Primera pantalla</p>
+          <h2>Facturacion acumulada del año</h2>
+        </div>
+        <span id="comparisonPeriod" class="pill">Comparativa anual</span>
+      </div>
+      <canvas id="ytdComparisonChart"></canvas>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Facturacion mes a mes por centro</h2>
+        </div>
+        <canvas id="monthlyRevenueChart"></canvas>
+      </article>
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Usuarios totales mes a mes por centro</h2>
+        </div>
+        <canvas id="monthlyUsersChart"></canvas>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head split">
+        <div>
+          <h2>Comparativa mensual por centro</h2>
+          <p class="muted">Evolucion de cada centro en el mes seleccionado contra años anteriores.</p>
+        </div>
+      </div>
+      <canvas id="centerComparisonChart"></canvas>
+      <div class="table-wrap">
+        <table id="monthlyComparisonTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head split">
+        <h2>Detalle por centro</h2>
+        <select id="centerSelect"></select>
+      </div>
+      <div class="grid two detail-grid">
+        <div>
+          <h3>Facturacion del centro</h3>
+          <canvas id="centerRevenueChart"></canvas>
+        </div>
+        <div>
+          <h3>Usuarios, altas y bajas</h3>
+          <canvas id="centerActivityChart"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js', v=asset_version) }}"></script>
+</body>
+</html>
