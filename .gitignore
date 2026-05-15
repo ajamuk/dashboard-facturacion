@@ -4,3 +4,6 @@ venv
 __pycache__
 *.pyc
 .DS_Store
+instance/google-service-account.json
+instance/dashboard.db
+instance/
