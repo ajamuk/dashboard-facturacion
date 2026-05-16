@@ -442,12 +442,82 @@ function renderCenter(center) {
   });
 }
 
+function renderCenterMiniCharts() {
+  const selected = selectedContext();
+  const container = document.getElementById("centerMiniCharts");
+
+  const months = [];
+  for (let i = 11; i >= 0; i--) {
+    let month = selected.month_index - i;
+    let year = selected.year;
+    if (month <= 0) { month += 12; year -= 1; }
+    months.push({ year, month, label: monthNames[month - 1].slice(0, 3) });
+  }
+
+  if (!container.hasChildNodes()) {
+    centers().forEach(center => {
+      const id = center.replace(/ /g, "-");
+      const card = document.createElement("article");
+      card.className = "panel center-card";
+      card.innerHTML = `
+        <div class="center-card-head">
+          <span class="center-dot" style="background:${centerColors[center] || "#687675"}"></span>
+          <h3>${center}</h3>
+        </div>
+        <div class="center-card-kpi">
+          <strong id="cval-${id}">—</strong>
+          <em id="cdelta-${id}"></em>
+        </div>
+        <canvas id="minichart-${id}"></canvas>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  centers().forEach(center => {
+    const id = center.replace(/ /g, "-");
+    const data = months.map(m => metricValue("clientes_activos", m.year, m.month, center));
+    const current = data[data.length - 1];
+    const first = data[0];
+    const delta = deltaPercent(current, first);
+    const color = centerColors[center] || "#687675";
+
+    document.getElementById(`cval-${id}`).textContent = numberFmt.format(current);
+    const deltaEl = document.getElementById(`cdelta-${id}`);
+    deltaEl.className = `delta ${deltaClass(delta)}`;
+    deltaEl.textContent = deltaText(delta);
+
+    chart(`minichart-${id}`, {
+      type: "line",
+      data: {
+        labels: months.map(m => m.label),
+        datasets: [{
+          data,
+          borderColor: color,
+          backgroundColor: color + "22",
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: { x: { display: false }, y: { display: false } }
+      }
+    });
+  });
+}
+
 function renderDashboardViews() {
   renderStatus();
   renderKpis();
   renderYtdComparisonChart();
   renderMonthlyRevenueChart();
   renderMonthlyUsersChart();
+  renderCenterMiniCharts();
   renderCenterComparison();
   fillCenterSelect();
   renderCenter(document.getElementById("centerSelect").value);

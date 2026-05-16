@@ -135,6 +135,52 @@ button.secondary {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
+.center-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.center-card-head h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.center-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.center-card-kpi {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.center-card-kpi strong {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.center-card canvas {
+  max-height: 72px;
+}
+
 .panel {
   padding: 18px;
   margin-bottom: 16px;
@@ -369,7 +415,8 @@ th {
   .filters,
   .status-row,
   .kpis,
-  .grid.two {
+  .grid.two,
+  .grid.three {
     grid-template-columns: 1fr;
   }
 
