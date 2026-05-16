@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist · CrossFit Metropolitano Getafe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #121212;
+      --green:   #87B15F;
+      --green-d: #6a9448;
+      --gray-l:  #EEE9E9;
+      --silver:  #C4C0BF;
+      --surface: #1C1C1C;
+      --card:    #242424;
+      --border:  rgba(196,192,191,0.18);
+      --border-m:rgba(196,192,191,0.35);
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--black);
+      color: var(--gray-l);
+      font-family: 'Barlow', sans-serif;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 0 80px;
+      min-height: 100svh;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--black);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 20px 16px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .brand {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      color: var(--silver);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-l);
+      line-height: 1.1;
+    }
+    .date-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--black);
+      background: var(--green);
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap { margin-bottom: 14px; }
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+    .progress-label { font-size: 12px; color: var(--silver); font-weight: 500; }
+    .progress-count { font-size: 13px; font-weight: 700; color: var(--gray-l); }
+    .progress-track {
+      height: 4px;
+      background: var(--border-m);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 4px;
+      transition: width .3s cubic-bezier(.4,0,.2,1);
+      width: 0%;
+    }
+
+    /* ── Tab switcher ── */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 3px;
+    }
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 0;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: .02em;
+    }
+    .tab-btn .tab-icon { font-size: 16px; }
+    .tab-btn.active {
+      background: var(--green);
+      color: var(--black);
+    }
+    .tab-btn.inactive {
+      background: transparent;
+      color: var(--silver);
+    }
+    .tab-btn.inactive:hover { color: var(--gray-l); }
+
+    /* ── Content area ── */
+    .content { padding: 16px 20px 0; }
+
+    /* ── Section card ── */
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 30px;
+      height: 30px;
+      background: rgba(135,177,95,.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-icon svg { width: 16px; height: 16px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-l);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      flex: 1;
+    }
+    .section-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--silver);
+      background: var(--surface);
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .section-count.done { background: rgba(135,177,95,.2); color: var(--green); }
+
+    /* ── Checklist items ── */
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .15s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .item:last-child { border-bottom: none; }
+    .item:active { background: rgba(255,255,255,.03); }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      border: 2px solid var(--border-m);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s cubic-bezier(.4,0,.2,1);
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+    .checkbox.on {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .checkbox .check-mark {
+      opacity: 0;
+      transform: scale(.5) rotate(-10deg);
+      transition: all .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .checkbox.on .check-mark {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+
+    .item-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--gray-l);
+      line-height: 1.5;
+      transition: color .2s;
+    }
+    .item-text.on {
+      color: rgba(196,192,191,.4);
+      text-decoration: line-through;
+      text-decoration-color: rgba(196,192,191,.35);
+    }
+
+    /* ── Completion banner ── */
+    .done-banner {
+      display: none;
+      margin: 0 20px 12px;
+      padding: 18px;
+      background: rgba(135,177,95,.12);
+      border: 1px solid rgba(135,177,95,.35);
+      border-radius: 14px;
+      text-align: center;
+    }
+    .done-banner.show { display: block; }
+    .done-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(135,177,95,.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+    }
+    .done-icon svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .done-title { font-size: 15px; font-weight: 700; color: var(--green); margin-bottom: 2px; }
+    .done-sub { font-size: 12px; color: rgba(135,177,95,.7); }
+
+    /* ── Reset button ── */
+    .reset-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: calc(100% - 40px);
+      margin: 8px 20px 0;
+      padding: 13px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--silver);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .reset-btn:hover { border-color: var(--border-m); color: var(--gray-l); }
+    .reset-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── Nota final ── */
+    .nota {
+      margin: 14px 20px 0;
+      padding: 13px 16px;
+      background: var(--surface);
+      border-radius: 10px;
+      border-left: 3px solid var(--green);
+    }
+    .nota p {
+      font-size: 12px;
+      color: var(--silver);
+      line-height: 1.6;
+    }
+    .nota strong { color: var(--gray-l); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <p class="brand">CrossFit Metropolitano · Getafe</p>
+          <p class="page-title" id="page-title">Apertura</p>
+        </div>
+        <span class="date-badge" id="date-badge"></span>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-labels">
+          <span class="progress-label">Completado</span>
+          <span class="progress-count" id="prog-count">0 / 17</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="prog-fill"></div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tb-a" onclick="switchTab('apertura')">
+          <span class="tab-icon">☀️</span> Apertura
+        </button>
+        <button class="tab-btn inactive" id="tb-c" onclick="switchTab('cierre')">
+          <span class="tab-icon">🌙</span> Cierre
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Done banner -->
+      <div class="done-banner" id="done-banner">
+        <div class="done-icon">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <p class="done-title" id="done-title">¡Box listo para entrenar!</p>
+        <p class="done-sub" id="done-sub">Todos los ítems completados</p>
+      </div>
+
+      <!-- Sections rendered here -->
+      <div id="checklist-sections"></div>
+
+      <!-- Nota -->
+      <div class="nota">
+        <p><strong>Recuerda:</strong> El box debe quedar siempre en las mismas condiciones o mejor de cómo se encontró. La idea es que cualquier persona pueda abrir o cerrar sin dudas.</p>
+      </div>
+
+      <!-- Reset -->
+      <button class="reset-btn" onclick="resetAll()">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Reiniciar checklist
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    const SVG = {
+      building: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>`,
+      trophy:   `<svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`,
+      tablet:   `<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+      sparkles: `<svg viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>`,
+      plug:     `<svg viewBox="0 0 24 24"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg>`,
+    };
+
+    const DATA = {
+      apertura: [
+        { title:"Instalaciones", icon:"building", items:[
+          {id:"a1", text:"Encender luces de entrada y zona de entrenamiento"},
+          {id:"a2", text:"Baños: papel higiénico, jabón y limpieza general"},
+          {id:"a3", text:"Avisar por Telegram si hay desperfectos"},
+          {id:"a4", text:"Revisar batería — cargar iPad y móvil si es necesario"},
+          {id:"a5", text:"Comprobar estado del material y orden (hacer fotos)"},
+          {id:"a6", text:"Baño mujeres: tampax, coleteros, etc."},
+          {id:"a7", text:"Sacar basuras a las 12:00 (o 20:30 si acumula mucha)"},
+          {id:"a8", text:"En horas sin clase: aspirar, magnesio, revisar baños"},
+        ]},
+        { title:"Área de entrenamiento", icon:"trophy", items:[
+          {id:"b1", text:"Escribir los entrenamientos del día en la pizarra"},
+          {id:"b2", text:"Comprobar que la pizarra esté limpia y clara"},
+          {id:"b3", text:"Preparar material según WOD (picas, dumbbells, kettlebells, gomas...)"},
+          {id:"b4", text:"Sacar máquinas si son necesarias (remo, assault bike, ski erg)"},
+          {id:"b5", text:"Barras, discos y racks ordenados y listos"},
+        ]},
+        { title:"Tecnología y sonido", icon:"tablet", items:[
+          {id:"c1", text:"Encender iPad, sonido, cronómetro y dataphone"},
+          {id:"c2", text:"Reproducir entrenamientos del día en la TV (YouTube)"},
+          {id:"c3", text:"Comprobar música y volumen adecuado"},
+          {id:"c4", text:"Aire acondicionado: 23 °C en verano / sin calefacción en invierno"},
+        ]},
+      ],
+      cierre: [
+        { title:"Orden y limpieza", icon:"sparkles", items:[
+          {id:"d1", text:"Guardar todas las máquinas y materiales utilizados"},
+          {id:"d2", text:"Barras, discos, kettlebells y dumbbells en su lugar"},
+          {id:"d3", text:"Borrar la pizarra"},
+          {id:"d4", text:"Baños: retirar basura y comprobar limpieza"},
+          {id:"d5", text:"Vestuarios y zona de clientes sin objetos olvidados"},
+        ]},
+        { title:"Tecnología y sonido", icon:"plug", items:[
+          {id:"e1", text:"Apagar iPad, TV, sonido y cronómetro — guardar mandos"},
+          {id:"e2", text:"Apagar luces de todas las salas"},
+          {id:"e3", text:"Apagar aire acondicionado o calefacción"},
+        ]},
+      ]
+    };
+
+    let currentTab = 'apertura';
+    let checked = new Set();
+
+    function allItems(tab) { return DATA[tab].flatMap(s => s.items); }
+
+    function render() {
+      const sections = DATA[currentTab];
+      const items = allItems(currentTab);
+      const done = items.filter(i => checked.has(i.id)).length;
+      const total = items.length;
+      const pct = total ? Math.round(done / total * 100) : 0;
+
+      document.getElementById('prog-count').textContent = done + ' / ' + total;
+      document.getElementById('prog-fill').style.width = pct + '%';
+      document.getElementById('page-title').textContent = currentTab === 'apertura' ? 'Apertura' : 'Cierre';
+
+      // Banner
+      const banner = document.getElementById('done-banner');
+      if (done === total && total > 0) {
+        banner.classList.add('show');
+        document.getElementById('done-title').textContent = currentTab === 'apertura'
+          ? '¡Box listo para entrenar!' : '¡Box cerrado correctamente!';
+        document.getElementById('done-sub').textContent = done + ' de ' + total + ' ítems completados';
+      } else {
+        banner.classList.remove('show');
+      }
+
+      // Sections
+      document.getElementById('checklist-sections').innerHTML = sections.map(sec => {
+        const secDone = sec.items.filter(i => checked.has(i.id)).length;
+        const secTotal = sec.items.length;
+        const allDone = secDone === secTotal;
+        return `
+          <div class="section-card">
+            <div class="section-head">
+              <div class="section-icon">${SVG[sec.icon]}</div>
+              <span class="section-title">${sec.title}</span>
+              <span class="section-count ${allDone ? 'done' : ''}">${secDone}/${secTotal}</span>
+            </div>
+            ${sec.items.map(item => `
+              <div class="item" onclick="toggle('${item.id}')">
+                <div class="checkbox ${checked.has(item.id) ? 'on' : ''}">
+                  <div class="check-mark">
+                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                      <polyline points="1,4.5 4,7.5 10,1" stroke="#121212" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <span class="item-text ${checked.has(item.id) ? 'on' : ''}">${item.text}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggle(id) {
+      if (checked.has(id)) checked.delete(id); else checked.add(id);
+      render();
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      const a = document.getElementById('tb-a');
+      const c = document.getElementById('tb-c');
+      if (tab === 'apertura') {
+        a.className = 'tab-btn active'; c.className = 'tab-btn inactive';
+      } else {
+        c.className = 'tab-btn active'; a.className = 'tab-btn inactive';
+      }
+      render();
+    }
+
+    function resetAll() {
+      checked = new Set();
+      render();
+    }
+
+    // Date
+    const d = new Date();
+    const days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    document.getElementById('date-badge').textContent =
+      days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+
+    render();
+  </script>
+</body>
+</html>

@@ -469,6 +469,7 @@ function renderCenterMiniCharts() {
           <em id="cdelta-${id}"></em>
         </div>
         <canvas id="minichart-${id}"></canvas>
+        ${center === "GETAFE" ? `<a class="checklist-btn" href="/static/checklist-getafe.html" target="_blank">📋 Checklist apertura / cierre</a>` : ""}
       `;
       container.appendChild(card);
     });
