@@ -259,28 +259,34 @@ function renderMonthlyUsersChart() {
   const selected = selectedContext();
   const labels = monthNames.slice(0, selected.month_index);
   const previousYear = selected.year - 1;
-  const datasets = centers().flatMap(center => [
-    {
-      label: `${center} ${selected.year}`,
-      data: labels.map((_, index) => metricValue("clientes_activos", selected.year, index + 1, center)),
-      borderColor: centerColors[center] || "#687675",
-      backgroundColor: centerColors[center] || "#687675",
-      tension: 0.25,
-      pointRadius: 3,
-    },
-    {
-      label: `${center} ${previousYear}`,
-      data: labels.map((_, index) => metricValue("clientes_activos", previousYear, index + 1, center)),
-      borderColor: centerColors[center] || "#687675",
-      backgroundColor: centerColors[center] || "#687675",
-      borderDash: [5, 5],
-      tension: 0.25,
-      pointRadius: 2,
-    }
-  ]);
+
+  function hexAlpha(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  const datasets = centers().flatMap(center => {
+    const color = centerColors[center] || "#687675";
+    return [
+      {
+        label: `${center} ${selected.year}`,
+        data: labels.map((_, index) => metricValue("clientes_activos", selected.year, index + 1, center)),
+        backgroundColor: color,
+        borderRadius: 4,
+      },
+      {
+        label: `${center} ${previousYear}`,
+        data: labels.map((_, index) => metricValue("clientes_activos", previousYear, index + 1, center)),
+        backgroundColor: hexAlpha(color, 0.35),
+        borderRadius: 4,
+      }
+    ];
+  });
 
   chart("monthlyUsersChart", {
-    type: "line",
+    type: "bar",
     data: { labels, datasets },
     options: {
       responsive: true,
